@@ -95,7 +95,7 @@ const SOLVER_DATA = {
 };
 
 const ITERATIONS = { coupled: 10180, piso: 11570, simple: 13075 };
-const ERROR_DATA  = { simple: { tau: 7.56, rise: 44.83 }, piso: { tau: 1.95, rise: 8.57 } };
+const ERROR_DATA  = { simple: { tau: 7.27, rise: 7.64 }, piso: { tau: 2.53, rise: 6.995 } };
 
 const NAV = [
   { id: "overview",    icon: "◈", label: "Overview" },
@@ -593,7 +593,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {[["Stabilization Time","~0%","~0%"],["Time Constant (τ)","7.56%","1.95%"],["Rise Time","44.83%","8.57%"]].map(([metric,s,p],i)=>(
+                    {[["Stabilization Time","0.8095%","0.153%"],["Time Constant (τ)","7.27%","2.53%"],["Rise Time","7.64%","6.946%"]].map(([metric,s,p],i)=>(
                       <tr key={metric} style={{ background:i%2===0?"transparent":C.bgTertiary }}>
                         <td style={{ padding:"8px 12px", color:C.text, borderBottom:`1px solid ${C.border}` }}>{metric}</td>
                         <td style={{ padding:"8px 12px", color:s==="~0%"?C.piso:C.simple, borderBottom:`1px solid ${C.border}` }}>{s}</td>
