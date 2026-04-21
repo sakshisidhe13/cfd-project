@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, createContext, useContext } from "react";
 // const PALETTE = { coupled: "#c4b5fd", piso: "#f9a8d4", simple: "#fde68a" };
 // const PALETTE = { coupled: "#c4b5fd", piso: "#ec4899", simple: "#fde68a" };
 // const PALETTE = { coupled: "#7c3aed", piso: "#ec4899", simple: "#eab308" };
-const PALETTE = { coupled: "#7c3aed", piso: "#3b82f6", simple: "#ef4444" };
+const PALETTE = { coupled: "#7c3aed", piso: "#3b82f6", simple: "#ec4899" };
 
 function makeColors(dark) {
   return {
