@@ -17,6 +17,9 @@ function makeColors(dark) {
   };
 }
 
+const MESH_IMG = "/images/mesh.png";
+const SKEW_IMG = "/images/skewness.png";
+
 const ThemeCtx = createContext({ dark: false, C: makeColors(false) });
 const useTheme = () => useContext(ThemeCtx);
 
@@ -565,6 +568,7 @@ export default function Dashboard() {
           {section === "geometry" && (
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, color: C.text }}>Geometry & Mesh</h2>
+              {/* ── Row 1: parameters + mesh quality stats ── */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
                 <div style={panel}>
                   <div style={panelLabel}>2D NOZZLE PARAMETERS</div>
@@ -578,23 +582,66 @@ export default function Dashboard() {
                   </table>
                 </div>
                 <div style={panel}>
-                  <div style={panelLabel}>MESH QUALITY</div>
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 12, color: C.textMuted, marginBottom: 4 }}>Skewness distribution</div>
-                    <div style={{ height: 8, background: C.bgTertiary, borderRadius: 4, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: "85%", background: C.piso, borderRadius: 4 }} />
-                    </div>
-                    <div style={{ fontSize: 11, color: C.piso, marginTop: 4 }}>85% elements in low skewness range</div>
-                  </div>
-                  {[["Mesh type","Structured"],["Refinement","Throat + exit"],["Quality","High — low skewness"],["Symmetry","2D axisymmetric"]].map(([k,v]) => (
-                    <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, marginBottom:6 }}>
+                  <div style={panelLabel}>MESH QUALITY SUMMARY</div>
+                  {[["Mesh type","Structured"],["Element types","Quad4 + Tri3"],["Refinement","Throat + nozzle exit"],["Quality","High — low skewness"],["Symmetry","2D axisymmetric"]].map(([k,v]) => (
+                    <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, marginBottom:8, borderBottom:`1px solid ${C.border}`, paddingBottom:6 }}>
                       <span style={{ color:C.textMuted }}>{k}</span>
-                      <span style={{ color:C.text }}>{v}</span>
+                      <span style={{ color:C.text, fontFamily:"monospace" }}>{v}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div style={panel}><NozzleSchematic /></div>
+              {/* ── Row 4: Nozzle schematic ── */}
+              <div style={panel}>
+                <div style={panelLabel}>NOZZLE SCHEMATIC WITH PROBE LOCATIONS</div>
+                <NozzleSchematic />
+              </div>
+
+              {/* ── Row 2: Mesh image ── */}
+              <div style={panel}>
+                <div style={panelLabel}>NOZZLE MESH — ANSYS FLUENT</div>
+                <div style={{ borderRadius:8, overflow:"hidden", border:`1px solid ${C.border}`, marginBottom:12 }}>
+                  <img
+                    src={MESH_IMG}
+                    alt="Structured mesh of the 2D axisymmetric converging-diverging nozzle"
+                    style={{ width:"100%", display:"block", objectFit:"contain", maxHeight:280 }}
+                  />
+                </div>
+                <div style={{ fontSize:12, color:C.textMuted, lineHeight:1.6 }}>
+                  Structured quadrilateral mesh of the 2D axisymmetric De Laval nozzle. Mesh refinement is applied near the throat and nozzle exit to accurately resolve steep velocity and pressure gradients in those regions.
+                </div>
+              </div>
+
+              {/* ── Row 3: Skewness plot + conclusions ── */}
+              <div style={panel}>
+                <div style={panelLabel}>ELEMENT SKEWNESS DISTRIBUTION</div>
+                {/* Full-width plot */}
+                <div style={{ borderRadius:8, overflow:"hidden", border:`1px solid ${C.border}`, marginBottom:16 }}>
+                  <img
+                    src={SKEW_IMG}
+                    alt="Skewness distribution histogram showing Tri3 and Quad4 elements vs Element Metrics"
+                    style={{ width:"100%", display:"block", objectFit:"contain" }}
+                  />
+                </div>
+                {/* Conclusions below */}
+                <div style={{ fontSize:11, color:C.textMuted, fontFamily:"monospace", letterSpacing:"0.06em", marginBottom:10 }}>KEY OBSERVATIONS</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:10 }}>
+                  {[
+                    { icon:"◉", color:C.piso,     text:"Most elements concentrated at very low skewness (~0 to 0.05), indicating near-perfect element quality." },
+                    { icon:"◎", color:C.coupled,  text:"Very few elements extend toward ~0.1 skewness — only a small fraction near the throat curvature." },
+                    { icon:"○", color:C.textMuted, text:"Almost no elements in the high skewness range (>0.3), confirming mesh suitability for accurate CFD." },
+                  ].map(({icon,color,text}) => (
+                    <div key={text} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"10px 12px", borderRadius:8, background:C.bgTertiary, border:`1px solid ${C.border}` }}>
+                      <span style={{ color, fontSize:14, flexShrink:0, marginTop:1 }}>{icon}</span>
+                      <span style={{ fontSize:12, color:C.textMuted, lineHeight:1.6 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding:"8px 12px", borderRadius:8, background:C.piso+"12", border:`1px solid ${C.piso}33` }}>
+                  <div style={{ fontSize:11, fontWeight:600, color:C.piso, fontFamily:"monospace", marginBottom:3 }}>VERDICT</div>
+                  <div style={{ fontSize:11, color:C.textMuted, lineHeight:1.6 }}>High-quality mesh — acceptable for pressure-based transient CFD simulations.</div>
+                </div>
+              </div>
             </div>
           )}
 
