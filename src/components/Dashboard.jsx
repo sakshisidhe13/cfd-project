@@ -95,7 +95,7 @@ const SOLVER_DATA = {
 };
 
 const ITERATIONS = { coupled: 10180, piso: 11570, simple: 13075 };
-const ERROR_DATA  = { simple: { tau: 7.27, rise: 7.64 }, piso: { tau: 2.53, rise: 6.995 } };
+const ERROR_DATA  = { simple: { tau: 7.27, rise: 7.64 }, piso: { tau: 2.53, rise: 6.945 } };
 
 const NAV = [
   { id: "overview",    icon: "◈", label: "Overview" },
@@ -569,10 +569,10 @@ export default function Dashboard() {
               <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: C.text }}>Accuracy Assessment</h2>
               <p style={{ color: C.textMuted, fontSize: 13, marginBottom: 20 }}>Percentage error vs COUPLED reference solver.</p>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:12, marginBottom:20 }}>
-                <KpiCard label="PISO τ error"           value="1.95%"  color={C.piso}   sub="vs coupled reference" />
-                <KpiCard label="SIMPLE τ error"         value="7.56%"  color={C.simple} sub="vs coupled reference" />
-                <KpiCard label="PISO rise time error"   value="8.57%"  color={C.piso}   sub="vs coupled reference" />
-                <KpiCard label="SIMPLE rise time error" value="44.83%" color={C.simple} sub="vs coupled reference" />
+                <KpiCard label="PISO τ error"           value="2.53%"  color={C.piso}   sub="vs coupled reference" />
+                <KpiCard label="SIMPLE τ error"         value="7.27%"  color={C.simple} sub="vs coupled reference" />
+                <KpiCard label="PISO rise time error"   value="6.945%"  color={C.piso}   sub="vs coupled reference" />
+                <KpiCard label="SIMPLE rise time error" value="7.64%" color={C.simple} sub="vs coupled reference" />
               </div>
               <div style={panel}>
                 <div style={panelLabel}>TIME CONSTANT (τ) ERROR</div>
