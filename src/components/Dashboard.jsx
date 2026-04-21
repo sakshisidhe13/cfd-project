@@ -97,6 +97,12 @@ const SOLVER_DATA = {
 const ITERATIONS = { coupled: 10180, piso: 11570, simple: 13075 };
 const ERROR_DATA  = { simple: { tau: 7.27, rise: 7.64 }, piso: { tau: 2.53, rise: 6.945 } };
 
+const videoMap = {
+  piso: "/videos/piso.mp4",
+  simple: "/videos/simple.mp4",
+  coupled: "/videos/coupled.mp4"
+};
+
 const NAV = [
   { id: "overview",    icon: "◈", label: "Overview" },
   { id: "geometry",    icon: "⬡", label: "Geometry & Mesh" },
@@ -104,6 +110,7 @@ const NAV = [
   { id: "performance", icon: "⚡", label: "Performance" },
   { id: "accuracy",    icon: "◎", label: "Accuracy" },
   { id: "insights",    icon: "★", label: "Key Insights" },
+  { id: "animations",  icon: "▶", label: "Velocity Animations" },
 ];
 
 /* ─── ATOMS ─── */
