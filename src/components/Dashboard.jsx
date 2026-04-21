@@ -320,6 +320,104 @@ function ThemeToggle() {
 }
 
 /* ─── ROOT DASHBOARD ─── */
+function AnimationsSection() {
+  const { C } = useTheme();
+  const [activeVid, setActiveVid] = useState("coupled");
+  const [playing, setPlaying]     = useState(true);
+  const vidRef = useRef(null);
+
+  const solvers = [
+    { id:"coupled", label:"Coupled", col: C.coupled, desc:"Reference solution — strong pressure-velocity coupling, fastest convergence." },
+    { id:"piso",    label:"PISO",    col: C.piso,    desc:"Non-iterative per time step — captures sharp transients with high temporal resolution." },
+    { id:"simple",  label:"SIMPLE",  col: C.simple,  desc:"Iterative corrections — smoother contours due to numerical diffusion, slightly damped transients." },
+  ];
+
+  const active = solvers.find(s => s.id === activeVid);
+
+  const handleSolverSwitch = (id) => {
+    setActiveVid(id);
+    setPlaying(true);
+  };
+
+  const togglePlay = () => {
+    if (!vidRef.current) return;
+    if (vidRef.current.paused) { vidRef.current.play(); setPlaying(true); }
+    else { vidRef.current.pause(); setPlaying(false); }
+  };
+
+  return (
+    <div>
+      {/* Solver selector tabs */}
+      <div style={{ display:"flex", gap:10, marginBottom:16, flexWrap:"wrap" }}>
+        {solvers.map(s => (
+          <button key={s.id} onClick={() => handleSolverSwitch(s.id)} style={{
+            flex:"1 1 120px", padding:"10px 16px", borderRadius:10,
+            border:`1.5px solid ${activeVid===s.id ? s.col : C.border}`,
+            background: activeVid===s.id ? s.col+"18" : C.bgSecondary,
+            color: activeVid===s.id ? s.col : C.textMuted,
+            cursor:"pointer", transition:"all 0.2s",
+            display:"flex", flexDirection:"column", alignItems:"center", gap:4,
+          }}>
+            <span style={{ fontSize:18 }}>{activeVid===s.id && playing ? "⏸" : "▶"}</span>
+            <span style={{ fontSize:12, fontWeight:600, fontFamily:"monospace" }}>{s.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Active solver info badge */}
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, padding:"10px 14px", borderRadius:8, background:active.col+"12", border:`1px solid ${active.col}33` }}>
+        <div style={{ width:8, height:8, borderRadius:"50%", background:active.col, flexShrink:0 }} />
+        <span style={{ fontSize:12, color:active.col, fontFamily:"monospace", fontWeight:600 }}>{active.label.toUpperCase()}</span>
+        <span style={{ fontSize:12, color:C.textMuted }}>—</span>
+        <span style={{ fontSize:12, color:C.textMuted }}>{active.desc}</span>
+      </div>
+
+      {/* Main video player */}
+      <div style={{ position:"relative", borderRadius:12, overflow:"hidden", border:`1.5px solid ${active.col}55`, background:"#000", marginBottom:14 }}>
+        <video
+          key={activeVid}
+          ref={vidRef}
+          src={videoMap[activeVid]}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ width:"100%", display:"block", maxHeight:420, objectFit:"contain" }}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        />
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"8px 14px", background:"linear-gradient(transparent,rgba(0,0,0,0.65))", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+          <button onClick={togglePlay} style={{ background:"rgba(255,255,255,0.15)", border:"none", borderRadius:6, padding:"5px 12px", color:"#fff", cursor:"pointer", fontSize:13, fontFamily:"monospace" }}>
+            {playing ? "⏸ Pause" : "▶ Play"}
+          </button>
+          <span style={{ fontSize:10, color:"rgba(255,255,255,0.6)", fontFamily:"monospace", letterSpacing:"0.06em" }}>
+            VELOCITY CONTOUR · {active.label.toUpperCase()} SOLVER · 10ms PULSE
+          </span>
+        </div>
+      </div>
+
+      {/* All three thumbnails side by side */}
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontSize:11, color:C.textMuted, fontFamily:"monospace", letterSpacing:"0.06em", marginBottom:10 }}>ALL SOLVERS — SIMULTANEOUS VIEW</div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+          {solvers.map(s => (
+            <div key={s.id} onClick={() => handleSolverSwitch(s.id)} style={{ cursor:"pointer", borderRadius:8, overflow:"hidden", border:`1.5px solid ${activeVid===s.id ? s.col : C.border}`, transition:"border-color 0.2s", position:"relative" }}>
+              <video src={videoMap[s.id]} autoPlay loop muted playsInline style={{ width:"100%", display:"block", objectFit:"cover", height:110 }} />
+              <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"4px 8px", background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", gap:6 }}>
+                <div style={{ width:6, height:6, borderRadius:"50%", background:s.col }} />
+                <span style={{ fontSize:10, color:"#fff", fontFamily:"monospace", fontWeight:600 }}>{s.label.toUpperCase()}</span>
+              </div>
+              {activeVid===s.id && (
+                <div style={{ position:"absolute", top:6, right:6, background:s.col, borderRadius:4, padding:"2px 6px", fontSize:9, color:"#fff", fontFamily:"monospace", fontWeight:700 }}>ACTIVE</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 export default function Dashboard() {
   const [dark, setDark]                   = useState(false);
@@ -645,6 +743,22 @@ export default function Dashboard() {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* VELOCITY ANIMATIONS */}
+          {section === "animations" && (
+            <div>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 11, color: C.textMuted, fontFamily: "monospace", letterSpacing: "0.08em", marginBottom: 6 }}>CFD FLOW VISUALISATION</div>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: C.text }}>Velocity Contour Animations</h2>
+                <p style={{ color: C.textMuted, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
+                  Transient velocity contour evolution during the 10 ms RCS thruster pulse start-up. Each animation shows the full plume development — ignition through stabilisation — for one solver scheme.
+                </p>
+              </div>
+
+              {/* Side-by-side toggle strip */}
+              <AnimationsSection />
             </div>
           )}
 
